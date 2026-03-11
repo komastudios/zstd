@@ -181,11 +181,12 @@ jobs:
       - name: Create universal binary
         if: matrix.universal
         run: |
+          find ${{github.workspace}}/dist-arm64 -type f
           mkdir -p ${{github.workspace}}/dist/lib ${{github.workspace}}/dist/include
-          lipo -create ${{github.workspace}}/dist-arm64/lib/libzstd_static.a ${{github.workspace}}/dist-x86_64/lib/libzstd_static.a -output ${{github.workspace}}/dist/lib/libzstd_static.a
+          lipo -create ${{github.workspace}}/dist-arm64/lib/libzstd.a ${{github.workspace}}/dist-x86_64/lib/libzstd.a -output ${{github.workspace}}/dist/lib/libzstd.a
           lipo -create ${{github.workspace}}/dist-arm64/lib/libzstd.dylib ${{github.workspace}}/dist-x86_64/lib/libzstd.dylib -output ${{github.workspace}}/dist/lib/libzstd.dylib
           cp -r ${{github.workspace}}/dist-arm64/include/ ${{github.workspace}}/dist/include/
-          lipo -info ${{github.workspace}}/dist/lib/libzstd_static.a
+          lipo -info ${{github.workspace}}/dist/lib/libzstd.a
           lipo -info ${{github.workspace}}/dist/lib/libzstd.dylib
 
       - name: Configure CMake (Standard)
