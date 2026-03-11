@@ -206,9 +206,7 @@ if (ZSTD_BUILD_SHARED)
     set_target_properties(
             libzstd_shared
             PROPERTIES
-            OUTPUT_NAME zstd
-            VERSION ${ZSTD_FULL_VERSION}
-            SOVERSION ${zstd_VERSION_MAJOR})
+            OUTPUT_NAME zstd)
             
     if (ZSTD_FRAMEWORK)
         set_target_properties(
