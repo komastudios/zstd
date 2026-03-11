@@ -141,10 +141,13 @@ jobs:
         run: >
           cmake -S build/cmake -B build-arm64
           -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+          -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/dist-arm64
           -GXcode
           -DCMAKE_OSX_ARCHITECTURES=arm64
           -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13
           -DCMAKE_XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT=dwarf
+          -DZSTD_BUILD_PROGRAMS=OFF
+          -DZSTD_BUILD_TESTS=OFF
 
       - name: Build (arm64 - Universal)
         if: matrix.universal
@@ -152,17 +155,20 @@ jobs:
 
       - name: Install (arm64 - Universal)
         if: matrix.universal
-        run: cmake --install build-arm64 --config ${{env.BUILD_TYPE}} --prefix dist-arm64
+        run: cmake --install build-arm64 --config ${{env.BUILD_TYPE}}
 
       - name: Configure CMake (x86_64 - Universal)
         if: matrix.universal
         run: >
           cmake -S build/cmake -B build-x86_64
           -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+          -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/dist-x86_64
           -GXcode
           -DCMAKE_OSX_ARCHITECTURES=x86_64
           -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13
           -DCMAKE_XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT=dwarf
+          -DZSTD_BUILD_PROGRAMS=OFF
+          -DZSTD_BUILD_TESTS=OFF
 
       - name: Build (x86_64 - Universal)
         if: matrix.universal
@@ -170,17 +176,17 @@ jobs:
 
       - name: Install (x86_64 - Universal)
         if: matrix.universal
-        run: cmake --install build-x86_64 --config ${{env.BUILD_TYPE}} --prefix dist-x86_64
+        run: cmake --install build-x86_64 --config ${{env.BUILD_TYPE}}
 
       - name: Create universal binary
         if: matrix.universal
         run: |
-          mkdir -p dist/lib dist/include
-          lipo -create dist-arm64/lib/libzstd_static.a dist-x86_64/lib/libzstd_static.a -output dist/lib/libzstd_static.a
-          lipo -create dist-arm64/lib/libzstd.dylib dist-x86_64/lib/libzstd.dylib -output dist/lib/libzstd.dylib
-          cp -r dist-arm64/include/ dist/include/
-          lipo -info dist/lib/libzstd_static.a
-          lipo -info dist/lib/libzstd.dylib
+          mkdir -p ${{github.workspace}}/dist/lib ${{github.workspace}}/dist/include
+          lipo -create ${{github.workspace}}/dist-arm64/lib/libzstd_static.a ${{github.workspace}}/dist-x86_64/lib/libzstd_static.a -output ${{github.workspace}}/dist/lib/libzstd_static.a
+          lipo -create ${{github.workspace}}/dist-arm64/lib/libzstd.dylib ${{github.workspace}}/dist-x86_64/lib/libzstd.dylib -output ${{github.workspace}}/dist/lib/libzstd.dylib
+          cp -r ${{github.workspace}}/dist-arm64/include/ ${{github.workspace}}/dist/include/
+          lipo -info ${{github.workspace}}/dist/lib/libzstd_static.a
+          lipo -info ${{github.workspace}}/dist/lib/libzstd.dylib
 
       - name: Configure CMake (Standard)
         if: "!matrix.android && !matrix.emscripten && !matrix.universal"
